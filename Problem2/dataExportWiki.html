@@ -22,14 +22,49 @@
             root = $("<div></div>")
             root.html(data.responseText)
 
-            var content = root.find("#content"); // find all the nodes that have ID "content"
-            var h2s = content.find(".mw-headline"); // search in all "content" nodes for nodes of class ".mw-headline"
+            var head = root.find("tr:nth-child(1)"); // find head of the table
+            var rows = root.find("tr:not(tr:nth-child(1))"); // all rows except head
 
-            $.each(h2s, function(index, value) {
-                console.log($(value).text()); // print text
-            });
+          
+          //only use one word headers
+          var text = "" + "Year,USCensus,PopulationBureau,UN,HYDE,Maddison" + "\n";
+
+       
+          $.each(rows, function(index, value) {
+                 
+            // ignore the first rows that have negative years
+            if(index > 9){
+               
+              var temptxt = "";
+              var data = 0;
+               $('td', this).each(function(j, column){
+
+                
+             
+                // only first 5 columns
+                if(j < 6) {
+                  if($(column).text()){
+                    
+                    temptxt += convertToInt($(column).text());
+                    ++data
+                  }
+                // don't add a comma for last entry
+                if(j% 6 != 5)  
+                 temptxt += "," 
+                }
+                                   
+                })
+              
+               //only add if there is meaningfull data
+              if(data > 1){
+
+              text +=  temptxt + "\n" 
+              } 
+                
+            }  
+          });
+         saveToFile([text],"timeline.csv")    
 			
-			saveToFile(["Hello World"],"test.txt")
         },
         error: function() {
             return console.log("error");
@@ -58,6 +93,7 @@
        });
        return saveAs(blob, fileName);
      };
+
 
      String.prototype.endsWith = function(suffix) {
        return this.indexOf(suffix, this.length - suffix.length) !== -1;

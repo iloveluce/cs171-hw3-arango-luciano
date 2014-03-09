@@ -1,0 +1,4 @@
+1. The data is made up of strings and strings of numbers. One string is the name of the organization/person reponsible for the estimates. Then we have the year as a number string and then the estimate.  It is different because of the way it is organized and the fact that many estimates have data that is missing.  It is organized into a table which is not what we have seen before. More importantly, the data is not consistent across estimates, some estimates might have 10 data points while others have 20 or so.
+
+2. The DOM element for the second row is $("tr:nth-child(2)")
+All rows but not the header row $("tr:not(tr:nth-child(1))")
