@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <script src="../libs/jquery-1.10.1.js"></script>
+    <script src="../libs/jquery.xdomainajax.js"></script>
+    <script src="../libs/d3.v3.min.js"></script>
+    <script src="../libs/FileSaver.js"></script>
+</head>
+<body>
+
+<script>
+    var convertToInt;
+
+    $.ajax({
+        url: "http://unglobalpulse.net/ewec/",
+        type: 'GET',
+        cache: false,
+        success: function(data) {
+            var root,allData, body, table;
+            root = $("<div></div>")
+            
+            root.html(data.responseText)
+            var rows = root.find("tr:not(tr:nth-child(1))"); // all rows except head
+          console.log(rows)
+          
+          //only use one word headers
+          var text = "Date," + "WomenHealth" + "\n";
+
+           $.each(rows, function(index, value) {
+                 
+
+              var temptxt = "";
+              var data = 0;
+               $('td', this).each(function(j, column){
+
+                // only first and last column
+                if(j == 0 || j == 3) {
+                  if($(column).text()){
+                    
+                    if(j == 3) //only for the column with numbers
+                      temptxt += convertToInt($(column).text());
+                    else
+                    {
+                     temptxt += $(column).text().trim(); 
+                    }  
+                    ++data
+                  }
+                // don't add a comma for last entry
+                if(j% 2 != 1)  
+                 temptxt += "," 
+                }
+                                   
+                })       
+               //only add if there is meaningfull data
+              if(data > 1)
+                text +=  temptxt + "\n" 
+            
+          });
+         saveToFile([text],"timeline.csv")    
+			
+        },
+        error: function() {
+            return console.log("error");
+        }
+    });
+
+    convertToInt = function(s) {
+        return parseInt(s.replace(/,/g, ""), 10);
+    };
+	
+    /* takes an array of strings
+       and writes them line by line into a file given by filename
+     */
+    var saveToFile = function(arrayOfLines, fileName) {
+       /* adds linebreaks at the end*/
+       var blob, blobText;
+       blobText = arrayOfLines.map(function(d) {
+         if (d.endsWith("\n")) {
+           return d;
+         } else {
+           return d + "\n";
+         }
+       });
+       blob = new Blob(blobText, {
+         type: "text/plain;charset=utf-8"
+       });
+       return saveAs(blob, fileName);
+     };
+
+
+     String.prototype.endsWith = function(suffix) {
+       return this.indexOf(suffix, this.length - suffix.length) !== -1;
+     };
+	
+
+
+
+</script>
+
+
+</body>
+</html>
