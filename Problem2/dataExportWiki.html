@@ -29,8 +29,7 @@
           //only use one word headers
           var text = "" + "Year,USCensus,PopulationBureau,UN,HYDE,Maddison" + "\n";
 
-       
-          $.each(rows, function(index, value) {
+           $.each(rows, function(index, value) {
                  
             // ignore the first rows that have negative years
             if(index > 9){
@@ -39,8 +38,6 @@
               var data = 0;
                $('td', this).each(function(j, column){
 
-                
-             
                 // only first 5 columns
                 if(j < 6) {
                   if($(column).text()){
@@ -53,14 +50,10 @@
                  temptxt += "," 
                 }
                                    
-                })
-              
+                })       
                //only add if there is meaningfull data
-              if(data > 1){
-
-              text +=  temptxt + "\n" 
-              } 
-                
+              if(data > 1)
+                text +=  temptxt + "\n" 
             }  
           });
          saveToFile([text],"timeline.csv")    
