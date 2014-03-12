@@ -31,8 +31,8 @@
 
         var xAxis, xScale, yAxis,  yScale, color;
 
-          xScale = d3.scale.linear().range([0, bbVis.w]); 
-          yScale = d3.scale.log().range([bbVis.h, 0]);  
+          xScale = d3.scale.linear().range([bbVis.x, bbVis.w]); 
+          yScale = d3.scale.linear().range([bbVis.h, bbVis.y]);  
           color = d3.scale.category10();
 
           
@@ -52,11 +52,7 @@
                 else
                 return true })
                 .x(function(d) { return xScale(d.date); })
-                .y(function(d) { 
-                    if(d.population != 0)
-                        return yScale(d.population)
-                    else
-                        return 0; });
+                .y(function(d) { return yScale(d.population); });
 
 
     d3.csv("timeline.csv", function(data) {
@@ -109,26 +105,28 @@
     .filter(function(d){
             return d
     })
-    
-    var temporaryscale = d3.scale.linear()
-    .domain(realdate[organ])
-    .range(realpop[organ]);
+  
+  var temporaryscale = d3.scale.linear()
+  .domain(realdate[organ])
+  .range(realpop[organ]);
 
-    
-    var points = svg.selectAll(".point")
-        .data(organizations[organ].values)
-        .enter().append("svg:circle")
-         .attr("stroke", function(d){ return "black";})
-         .attr("fill", function(d, i) { 
-             if(d.population != 0)
-                return "green"
-            else
-                return "red" })
-         .attr("cx", function(d, i) { 
-            return xScale(d.date) })
-         .attr("cy", function(d, i) { 
+  console.log(realpop)
+  console.log(realdate)
 
-            if(d.population == 0 && d.date > d3.min(realdate[organ]) && 
+  var points = svg.selectAll(".point")
+      .data(organizations[organ].values)
+      .enter().append("svg:circle")
+       .attr("stroke", function(d){ return "black";})
+       .attr("fill", function(d, i) { 
+           if(d.population != 0)
+              return "green"
+          else
+              return "red" })
+       .attr("cx", function(d, i) { 
+          return xScale(d.date) })
+       .attr("cy", function(d, i) { 
+
+          if(d.population == 0 && d.date > d3.min(realdate[organ]) && 
                 d.date < d3.max(realdate[organ]))
             {
               d.population = temporaryscale(d.date);
@@ -166,6 +164,7 @@
 
   svg.append("g")
       .attr("class", "y axis")
+      .attr("transform", "translate(" + bbVis.x + ","+ bbVis.y+  ")")
       .call(yAxis)
     .append("text")
       .attr("transform", "rotate(-90)")
