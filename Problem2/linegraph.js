@@ -7,7 +7,7 @@
         top: 50,
         right: 50,
         bottom: 50,
-        left: 115
+        left: 50
     };
 
     width = 960 - margin.left - margin.right;
@@ -91,7 +91,7 @@
     var realpop = {};
     var realdate = {};
 
- 
+
     for (var organ in organizations)
     {
     
@@ -113,8 +113,8 @@
     var temporaryscale = d3.scale.linear()
     .domain(realdate[organ])
     .range(realpop[organ]);
-    
 
+    
     var points = svg.selectAll(".point")
         .data(organizations[organ].values)
         .enter().append("svg:circle")

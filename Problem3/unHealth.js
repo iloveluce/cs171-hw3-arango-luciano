@@ -37,11 +37,12 @@ svg = d3.select("#visUN").append("svg").attr({
 
 var parseDate = d3.time.format("%B %Y").parse;
 
+// since both have the same x and width, made only one xscale to save code
 var x = d3.time.scale()
-    .range([0, bbOverview.w]);
+    .range([bbOverview.x, bbOverview.w]);
 
 var yline = d3.scale.linear()
-    .range([bbOverview.h, 0]);
+    .range([bbOverview.h, bbOverview.y]);
 
 
 var yarea = d3.scale.linear()
@@ -96,7 +97,7 @@ d3.csv("unHealth.csv", function(data) {
 
   svg.append("g")
       .attr("class", "axis")
-      .attr("transform", "translate(0," + bbOverview.h + ")")
+      .attr("transform", "translate("+ bbOverview.x +"," +bbOverview.h + ")")
       .call(xAxis);
 
   svg.append("g")
@@ -141,18 +142,18 @@ d3.csv("unHealth.csv", function(data) {
       .attr("d", area);
 
   svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(" +bbDetail.x+ "," + bbDetail.h + ")")
+      .attr("class", "axis")
+      .attr("transform", "translate(" + bbDetail. x + "," + bbDetail.h + ")")
       .call(xAxis);
 
     svg.append("g")
-      .attr("class", "y axis")
+      .attr("class", "axis")
       .call(yareaAxis)
 
 svg.append("g").attr("class", "brush").call(brush)
   .selectAll("rect").attr({
-    height: bbOverview.h,
-    transform: "translate(" + bbOverview.y +"," + bbOverview.x +  ")"
+    height: bbOverview.h - bbOverview.y,
+    transform: "translate(" + bbOverview.x +"," + bbOverview.y +  ")"
 });
 
 
