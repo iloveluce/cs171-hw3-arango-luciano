@@ -32,9 +32,14 @@
             stroke-width:1;
 
         }
+        .areapoint{
 
+            clip-path: url(#clip);
+
+        }
         .detailPath {
             stroke-width:2;
+            clip-path: url(#clip);
         }
 
 
@@ -43,17 +48,59 @@
             stroke: none;
             fill:steelblue;
             fill-opacity:0.5;
+            clip-path: url(#clip);
         }
+
+    .tooltipouter{
+         margin: 30px 30px 30px 30px;
+        float: right;
+
+
+
+    }
+
+    .tooltip {
+        
+        width: 200px;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        
+}
+
 
     </style>
 
 </head>
 <body>
-<div id="visUN"></div>
+<div id="visUN">
+
+<div class="tooltipouter">
+<div class="tooltip" id = "effect">
+       
+        <p>New rules go into effect (August 2012) </p>
+</div>
+</div>
+<div class="tooltipouter">
+
+<div class="tooltip" id= "announced">
+       
+        <p> Obama Administration announces new rules requiring private health plans to cover preventive services for women without charging co-pay (February 2012)</p>
+</div>
+</div>
+
+
+</div>
 
 
 	<script src="unHealth.js"></script>
-
 
 </body>
 </html>

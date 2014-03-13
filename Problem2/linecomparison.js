@@ -34,26 +34,30 @@
           xScale = d3.scale.linear().range([bbVis.x, bbVis.w]); 
           yScale = d3.scale.linear().range([bbVis.h, bbVis.y]);  
           color = d3.scale.category10();
-
+ 
           
+        var isabsolute = true;
+ 
         var xAxis = d3.svg.axis()
             .scale(xScale)
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
             .scale(yScale)
+            .tickFormat(function(d) {
+            if(!isabsolute){
+              return formatPercent(d/100)
+
+            }
+            else{
+              return d;
+            }
+            })
             .orient("left");
 
-          var line = d3.svg.line()
-                .interpolate("cardinal")
-                .defined(function(d) { 
-                if(d.population == 0)
-                    return false;
-                else
-                return true })
-                .x(function(d) { return xScale(d.date); })
-                .y(function(d) { return yScale(d.population); });
 
+    
+    var formatPercent = d3.format("0%");
 
     d3.csv("timeline.csv", function(data) {
 
@@ -66,95 +70,83 @@
         return {
           name: name,
           values: data.map(function(d) {
-        return {date: d.Year, population: +d[name]}  
-          })
-          }
+        if(d[name] > 0)
+        {
+           return {date: d.Year, population: +d[name]}  
+        } 
+          }).filter(function (d){return d})
+        }})
+
+     var mean = {};
     
-      });
-
-      yScale.domain([
-        d3.min(organizations, function(c) { return d3.min(c.values, function(v) { 
-                if(v.population != 0)
-                return v.population; }); }),
-        d3.max(organizations, function(c) { return d3.max(c.values, function(v) { 
-                return v.population; }); })
-      ]);
+        data.forEach(function(list) {
+        
+          mean[list.Year] = d3.mean([convertToInt(list.HYDE), convertToInt(list.Maddison), convertToInt(list.PopulationBureau),
+          convertToInt(list.UN), convertToInt(list.USCensus)]) 
+       })
+     
+    
   
-   
 
+    organizations.forEach(function(data)
+      {
+        data.values.forEach(function(d){
+          d.population -=  mean[d.date];
+        })})
 
-
-    var realpop = {};
-    var realdate = {};
+  
+       Ydomain();
 
 
     for (var organ in organizations)
     {
+ 
+     var points = svg.selectAll(".point")
+        .data(organizations[organ].values)
+        .enter()
+        .append("svg:circle")
+        .attr("class", "dp")
+        .attr("stroke", function(d){ return "black";})
+        .attr("fill", function(d){
     
-    realpop[organ] = organizations[organ].values.map(function(d){
-        if(d.population > 0)
-        return d.population})
-    .filter(function(d){
-        return d;
-    })
+          return color(organizations[organ].name)
+        } )
+         .attr("cx", function(d, i) { 
+            return xScale(d.date) })
+         .attr("cy", function(d, i) { 
+            return yScale(d.population)
+               })
+           .attr("r", function(d, i) { 
+               if(d.population   != 0)
+                  return 3;
+              else
+                  return 0;
+               }).on("mouseover", function(d, y) {
 
-    realdate[organ] = organizations[organ].values.map(function(d){
-        if(d.population)
-            return d.date;
-    })
-    .filter(function(d){
-            return d
-    })
-  
-  var temporaryscale = d3.scale.linear()
-  .domain(realdate[organ])
-  .range(realpop[organ]);
+     /* Tooltip thanks to D3 Chapter 10 in book*/
 
-  console.log(realpop)
-  console.log(realdate)
+     //Update the tooltip position and value
+     d3.select("#tooltip")
+       .select("#value")
+       .html(organizations[organ].name + "<br>" + "Year: " + d.date + "<br> Uncertainty: " + d.population.toFixed(2)  );
 
-  var points = svg.selectAll(".point")
-      .data(organizations[organ].values)
-      .enter().append("svg:circle")
-       .attr("stroke", function(d){ return "black";})
-       .attr("fill", function(d, i) { 
-           if(d.population != 0)
-              return "green"
-          else
-              return "red" })
-       .attr("cx", function(d, i) { 
-          return xScale(d.date) })
-       .attr("cy", function(d, i) { 
+     //Show the tooltip
+     d3.select("#tooltip").classed("hidden", false);
 
-          if(d.population == 0 && d.date > d3.min(realdate[organ]) && 
-                d.date < d3.max(realdate[organ]))
-            {
-              d.population = temporaryscale(d.date);
-            } 
+     })
 
-            var y = yScale(d.population)      
-            if(isNaN(y) || y == "Infinity") // just for error checking
-                return 1;
-              return y;
-             })
-         .attr("r", function(d, i) { 
-             if(d.population != 0)
-                return 3;
-            else
-                return 0;
-            
-             })
+     .on("mouseout", function() {
+
+     //Hide the tooltip
+     d3.select("#tooltip").classed("hidden", true);
+
+     })
+
+      
+
+
+
     }
-
-  var organization = svg.selectAll(".organization")
-      .data(organizations)
-      .enter().append("g")
-      .attr("class", "organization");
-
- organization.append("path")
-      .attr("class", "line")
-      .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return color(d.name); });
 
 
   svg.append("g")
@@ -166,14 +158,78 @@
       .attr("class", "y axis")
       .attr("transform", "translate(" + bbVis.x + ","+ bbVis.y+  ")")
       .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Population");
 
-        return 
+
+  function relative(){
+
+    if(!isabsolute)
+        return
+     isabsolute = false;
+    organizations.forEach(function(data)
+      {
+        data.values.forEach(function(d){
+          d.population =  100 * (  (d.population)/mean[d.date]);
+        })})
+  
+      Ydomain();
+
+   d3.selectAll(".dp")
+      .transition()
+      .duration(500)
+      .attr("cy", function(d, i) { return yScale(d.population  )})
+
+       d3.select(".y.axis").transition().duration(500).call(yAxis);
+     
+
+     
+  }
+
+  function absolute(){
+    if(isabsolute)
+        return
+    isabsolute = true;
+    
+    organizations.forEach(function(data)
+      {
+        data.values.forEach(function(d){
+          d.population =  ((d.population/ 100)) * mean[d.date];
+        })})
+
+    Ydomain();
+
+     d3.selectAll(".dp")
+      .transition()
+      .duration(500)
+      .attr("cy", function(d, i) { return yScale(d.population  )})
+
+       d3.select(".y.axis").transition().duration(500).call(yAxis);
+    
+
+  }
+
+
+  function Ydomain(){
+
+
+    yScale.domain([
+        d3.min(organizations, function(c) { return d3.min(c.values, function(v, i) { 
+                if(v.population != 0){
+                   return v.population ;
+                }
+                  }); }),
+        d3.max(organizations, function(c) { return d3.max(c.values, function(v, j) { 
+                
+               return v.population ; }); })
+      ]);
+  }
+
+
+    d3.select("input[value=\"absolute\"]").on("click", absolute);
+    d3.select("input[value=\"relative\"]").on("click", relative);
+
+         
     });
 
-    
+var convertToInt = function(s) {
+    return parseInt(s.replace(/,/g, ""), 10);
+};

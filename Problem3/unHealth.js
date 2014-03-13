@@ -9,7 +9,7 @@ var margin = {
 
 var width = 960 - margin.left - margin.right;
 
-var height = 800 - margin.bottom - margin.top;
+var height = 600 - margin.bottom - margin.top;
 
 bbOverview = {
     x: 0,
@@ -71,6 +71,12 @@ var yDetailAxis = d3.svg.axis()
     .orient("left");
 
 
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
 var overviewLine = d3.svg.line()
     .x(function(d) { return xOverview(d.Date); })
     .y(function(d) { return yOverview(d.WomenHealth); });
@@ -100,6 +106,11 @@ d3.csv("unHealth.csv", function(data) {
     xDetail.domain(d3.extent(data, function(d) { return d.Date; }));
     yDetail.domain(d3.extent(data, function(d) { return d.WomenHealth; }));
 
+  
+
+    var deatailgraph = svg.append("g")
+            .attr("class", "deatailgraph");
+
   svg.append("g")
       .attr("class", "axis")
       .attr("transform", "translate("+ bbOverview.x +"," +bbOverview.h + ")")
@@ -113,6 +124,7 @@ d3.csv("unHealth.csv", function(data) {
         .data(data)
         .enter().append("svg:circle")
          .attr("fill", "steelblue")
+         .attr("class", "linepoint")
          .attr("cx", function(d, i) { 
             return xOverview(d.Date) })
          .attr("cy", function(d, i) { 
@@ -122,12 +134,13 @@ d3.csv("unHealth.csv", function(data) {
    var areapoints = svg.selectAll(".point")
         .data(data)
         .enter().append("svg:circle")
-         .attr("fill", "steelblue")
-         .attr("cx", function(d, i) { 
+        .attr("fill", "steelblue")
+        .attr("class", "areapoint")
+        .attr("cx", function(d, i) { 
             return xDetail(d.Date) })
-         .attr("cy", function(d, i) { 
+        .attr("cy", function(d, i) { 
             return yDetail(d.WomenHealth) })     
-         .attr("r", 2.5); 
+        .attr("r", 2.5); 
   
 
   svg.append("path")
@@ -135,40 +148,58 @@ d3.csv("unHealth.csv", function(data) {
       .attr("class", "path overviewPath")
       .attr("d", overviewLine);
 
-    svg.append("path")
+    deatailgraph.append("path")
       .datum(data)
       .attr("class", "path detailPath")
       .attr("d", detailLine);
 
 
-    svg.append("path")
+    deatailgraph.append("path")
       .datum(data)
       .attr("class", "detailArea")
       .attr("d", area);
 
-  svg.append("g")
-      .attr("class", "axis")
+  deatailgraph.append("g")
+      .attr("class", "x axis")
       .attr("transform", "translate(" + bbDetail. x + "," + bbDetail.h + ")")
       .call(xDetailAxis);
 
-    svg.append("g")
+    deatailgraph.append("g")
       .attr("class", "axis")
       .call(yDetailAxis)
+
+    svg.append("g")
+    .attr("class", "tooltip")
+    .attr("transform", "translate( 300 , 600)")
 
 svg.append("g").attr("class", "brush").call(brush)
   .selectAll("rect").attr({
     height: bbOverview.h - bbOverview.y,
-    transform: "translate(" + bbOverview.x +"," + bbOverview.y +  ")"
-});
-
-
-
-});
-
+    transform: "translate(" + bbOverview.x +"," + bbOverview.y +  ")"});
 
 function brushed(){
-   xOverview.domain(d3.extent(data, function(d) { return d.WomenHealth; }));
-}
+  xDetail.domain(brush.empty() ? xOverview.domain() : brush.extent());
+  deatailgraph.select(".detailArea").attr("d", area);
+  deatailgraph.select(".detailPath").attr("d", detailLine);
+  
+  areapoints.attr("cx", function(d, i) { 
+            console.log("here")
+            return xDetail(d.Date) })
+         .attr("cy", function(d, i) { 
+            return yDetail(d.WomenHealth) });
+  deatailgraph.select(".x.axis").call(xDetailAxis);}
+
+
+  d3.select("div[id=\"announced\"]").on("click", function(){ console.log("announce")})
+    d3.select("div[id=\"effect\"]").on("click", function(){console.log("effect")})
+      console.log(d3.select("div[id=\"effect\"]"))
+
+
+
+
+
+});
+
 
 var convertToInt = function(s) {
     return parseInt(s.replace(/,/g, ""), 10);

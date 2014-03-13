@@ -110,8 +110,6 @@
   .domain(realdate[organ])
   .range(realpop[organ]);
 
-  console.log(realpop)
-  console.log(realdate)
 
   var points = svg.selectAll(".point")
       .data(organizations[organ].values)
@@ -172,6 +170,11 @@
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Population");
+
+    d3.select("input[value=\"absolute\"]").on("click", function(){
+        console.log('here')
+    });
+    d3.select("input[value=\"relative\"]").on("click", random_layout);
 
         return 
     });
