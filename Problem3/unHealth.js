@@ -191,26 +191,18 @@ function brushed(){
     //Update the tooltip 
     d3.select("#effect")
        .select("#value")
-        .on("click", function(){ 
+        .on("click", function(){  // i don't know why it doesn't work
         console.log("announce")})
        .html("New rules go into effect <br> (August 2012)" )
 
         //Update the tooltip e
     d3.select("#announced")
        .select("#value")
-        .on("click", function(){ 
+        .on("click", function(){ // i don't know why it doesn't work
         
-            alert('her')
+            alert('here')
         })
        .html("Obama Administration announces new rules requiring private health plans to cover preventive services for women without charging co-pay (February 2012)" )
-
-
-
-
-  d3.select("div[id=\"announced\"]").on("mouseover", function(){ 
-    console.log("announce")})
-    d3.select("div[id=\"effect\"]").on("mouseover", function(){console.log("effect")})
-      console.log(d3.select("div[id=\"effect\"]"))
 
 
 

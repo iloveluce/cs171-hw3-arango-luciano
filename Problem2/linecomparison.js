@@ -128,7 +128,8 @@
      //Update the tooltip position and value
      d3.select("#tooltip")
        .select("#value")
-       .html(organizations[organ].name + "<br>" + "Year: " + d.date + "<br> Uncertainty: " + d.population.toFixed(2)  );
+       .html(organizations[organ].name + "<br>" + "Year: " + d.date + "<br> Uncertainty: " + d.population.toFixed(2) 
+        + "<br> Mean: " + mean[d.date] );
 
      //Show the tooltip
      d3.select("#tooltip").classed("hidden", false);
@@ -205,7 +206,6 @@
 
 
   function Ydomain(){
-
 
     yScale.domain([
         d3.min(organizations, function(c) { return d3.min(c.values, function(v, i) { 
