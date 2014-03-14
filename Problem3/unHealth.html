@@ -62,6 +62,7 @@
     .tooltip {
         
         width: 200px;
+        cursor: pointer;
         height: auto;
         padding: 10px;
         background-color: white;
@@ -74,6 +75,13 @@
         pointer-events: none;
         
 }
+.tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+}
+
 
 
     </style>
@@ -83,16 +91,16 @@
 <div id="visUN">
 
 <div class="tooltipouter">
-<div class="tooltip" id = "effect">
+<div class="tooltip" id = "effect" >
        
-        <p>New rules go into effect (August 2012) </p>
+        <p><span id="value"></span> </p>
 </div>
 </div>
 <div class="tooltipouter">
 
 <div class="tooltip" id= "announced">
        
-        <p> Obama Administration announces new rules requiring private health plans to cover preventive services for women without charging co-pay (February 2012)</p>
+        <p> <span id = "value" onclick="function(){console.log('here')}"></span></p>
 </div>
 </div>
 

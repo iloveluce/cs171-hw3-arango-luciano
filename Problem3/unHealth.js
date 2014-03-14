@@ -4,7 +4,7 @@ var margin = {
     top: 50,
     right: 50,
     bottom: 50,
-    left: 60
+    left: 80
 };
 
 var width = 960 - margin.left - margin.right;
@@ -183,15 +183,33 @@ function brushed(){
   deatailgraph.select(".detailPath").attr("d", detailLine);
   
   areapoints.attr("cx", function(d, i) { 
-            console.log("here")
             return xDetail(d.Date) })
          .attr("cy", function(d, i) { 
             return yDetail(d.WomenHealth) });
   deatailgraph.select(".x.axis").call(xDetailAxis);}
 
+    //Update the tooltip 
+    d3.select("#effect")
+       .select("#value")
+        .on("click", function(){ 
+        console.log("announce")})
+       .html("New rules go into effect <br> (August 2012)" )
 
-  d3.select("div[id=\"announced\"]").on("click", function(){ console.log("announce")})
-    d3.select("div[id=\"effect\"]").on("click", function(){console.log("effect")})
+        //Update the tooltip e
+    d3.select("#announced")
+       .select("#value")
+        .on("click", function(){ 
+        
+            alert('her')
+        })
+       .html("Obama Administration announces new rules requiring private health plans to cover preventive services for women without charging co-pay (February 2012)" )
+
+
+
+
+  d3.select("div[id=\"announced\"]").on("mouseover", function(){ 
+    console.log("announce")})
+    d3.select("div[id=\"effect\"]").on("mouseover", function(){console.log("effect")})
       console.log(d3.select("div[id=\"effect\"]"))
 
 
